@@ -1,0 +1,278 @@
+---
+import type { Translations } from '../i18n/cs';
+
+interface Props {
+  t: Translations['contact'];
+}
+
+const { t } = Astro.props;
+const { form } = t;
+---
+
+<section class="contact section" id="contact" aria-labelledby="contact-heading">
+  <div class="container contact__inner">
+    <!-- Info column -->
+    <div class="contact__info">
+      <span class="section-label">{t.sectionLabel}</span>
+      <h2 id="contact-heading">{t.heading}</h2>
+      <p class="contact__sub">{t.subheading}</p>
+
+      <ul class="contact__details" role="list">
+        <li>
+          <a href={`tel:${t.phone.replace(/\s/g, '')}`} class="contact__link">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M2 3.5A1.5 1.5 0 013.5 2h1.148a1.5 1.5 0 011.465 1.175l.716 3.223a1.5 1.5 0 01-.982 1.698l-.758.303a11.067 11.067 0 005.512 5.512l.303-.758a1.5 1.5 0 011.698-.982l3.223.716A1.5 1.5 0 0118 14.352V15.5A1.5 1.5 0 0116.5 17h-1C7.716 17 2 11.284 2 4.5V3.5z" stroke="currentColor" stroke-width="1.2"/>
+            </svg>
+            <span>{t.phone}</span>
+          </a>
+        </li>
+        <li>
+          <a href={`mailto:${t.email}`} class="contact__link">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M2.5 5.5l7.5 5 7.5-5M3 4h14a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V5a1 1 0 011-1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+            </svg>
+            <span>{t.email}</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="contact__socials">
+        <a href={t.instagram.href} target="_blank" rel="noopener noreferrer" class="contact__social" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="1.4"/>
+            <circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.4"/>
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+          </svg>
+          <span>{t.instagram.label}</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Form column -->
+    <div class="contact__form-wrap">
+      <form
+        class="contact__form"
+        action={form.action}
+        method="POST"
+        id="contact-form"
+        novalidate
+      >
+        <!-- Formspree honeypot — skrytý před uživatelem, past na boty -->
+        <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" />
+
+        <div class="form-field">
+          <label for="email">{form.emailLabel}</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            placeholder={form.emailPlaceholder}
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="service">{form.serviceLabel}</label>
+          <div class="select-wrap">
+            <select id="service" name="service" required>
+              <option value="" disabled selected>{form.serviceDefault}</option>
+              {form.serviceOptions.map(opt => (
+                <option value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+            <svg class="select-arrow" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+              <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn--accent">{form.submit}</button>
+
+        <p class="form-success" id="form-success" aria-live="polite" hidden>
+          {form.successMessage}
+        </p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const success = document.getElementById('form-success')!;
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: data,
+        headers: { Accept: 'application/json' },
+      });
+      if (res.ok) {
+        form.reset();
+        success.hidden = false;
+        (form.querySelector('[type=submit]') as HTMLButtonElement).disabled = true;
+      }
+    });
+  }
+</script>
+
+<style>
+  .contact__inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(3rem, 6vw, 7rem);
+    align-items: start;
+  }
+
+  .contact__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .contact__sub {
+    font-size: 1rem;
+    font-weight: 200;
+    color: var(--text-muted);
+    line-height: 1.75;
+    max-width: 38ch;
+  }
+
+  .contact__details {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+
+  .contact__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9375rem;
+    font-weight: 300;
+    color: var(--text-muted);
+    transition: color var(--transition);
+  }
+
+  .contact__link:hover {
+    color: var(--text);
+  }
+
+  .contact__link svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .contact__socials {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .contact__social {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9375rem;
+    font-weight: 300;
+    color: var(--text-muted);
+    transition: color var(--transition);
+  }
+
+  .contact__social:hover {
+    color: var(--text);
+  }
+
+  .contact__social svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  /* Form */
+  .contact__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-field label {
+    font-size: 0.6875rem;
+    font-weight: 300;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .form-field input,
+  .form-field select {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 300;
+    color: var(--text);
+    appearance: none;
+    transition: border-color var(--transition);
+  }
+
+  .form-field input::placeholder {
+    color: var(--border);
+  }
+
+  .form-field input:focus,
+  .form-field select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .select-wrap {
+    position: relative;
+  }
+
+  .select-wrap select {
+    padding-right: 2.5rem;
+    cursor: pointer;
+  }
+
+  .select-arrow {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0.75rem;
+    pointer-events: none;
+    color: var(--text-muted);
+  }
+
+  .form-success {
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 767px) {
+    .contact__inner {
+      grid-template-columns: 1fr;
+    }
+
+    .contact__sub {
+      max-width: 100%;
+    }
+  }
+</style>

@@ -1,0 +1,163 @@
+---
+import type { Translations } from '../i18n/cs';
+
+interface Props {
+  t: Translations['services'];
+  locale: 'cs' | 'en';
+}
+
+const { t, locale } = Astro.props;
+---
+
+<section class="services section" id="services" aria-labelledby="services-heading">
+  <div class="container">
+    <div class="services__header">
+      <span class="section-label">{t.sectionLabel}</span>
+      <h2 id="services-heading">{t.heading}</h2>
+    </div>
+
+    <ol class="services__grid" role="list">
+      {t.items.map((item, index) => (
+        <li class="service-card">
+          <div class="service-card__media">
+            <img src={item.image} alt={item.name} loading="lazy" />
+          </div>
+          <div class="service-card__content">
+            <span class="service-card__index" aria-hidden="true">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <h3 class="service-card__name">{item.name}</h3>
+            <p class="service-card__desc">{item.description}</p>
+            <div class="service-card__price">
+              <span class="service-card__amount">{item.price}</span>
+              {item.priceNote && (
+                <span class="service-card__note">{item.priceNote}</span>
+              )}
+            </div>
+            <a href={`/${locale}/#contact`} class="btn" aria-label={`${t.cta} — ${item.name}`}>
+              {t.cta}
+            </a>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .services__header {
+    margin-bottom: clamp(3rem, 5vw, 4.5rem);
+  }
+
+  .services__grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  .service-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .service-card__media {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    margin-bottom: 1.75rem;
+  }
+
+  .service-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.8) sepia(0.12);
+    transition: transform 600ms ease, filter 600ms ease;
+  }
+
+  .service-card:hover .service-card__media img {
+    transform: scale(1.03);
+    filter: saturate(1) sepia(0);
+  }
+
+  .service-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex: 1;
+  }
+
+  .service-card__index {
+    font-size: 0.6875rem;
+    font-weight: 300;
+    letter-spacing: 0.14em;
+    color: var(--border);
+  }
+
+  .service-card__name {
+    font-size: clamp(1.1rem, 1.6vw, 1.375rem);
+    font-weight: 300;
+  }
+
+  .service-card__desc {
+    font-size: 0.9375rem;
+    font-weight: 200;
+    color: var(--text-muted);
+    line-height: 1.7;
+    flex: 1;
+  }
+
+  .service-card__price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+  }
+
+  .service-card__amount {
+    font-size: clamp(1.1rem, 1.6vw, 1.375rem);
+    font-weight: 300;
+  }
+
+  .service-card__note {
+    font-size: 0.6875rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .service-card .btn {
+    align-self: flex-start;
+    margin-top: 0.75rem;
+  }
+
+  @media (max-width: 900px) {
+    .services__grid {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+
+    .service-card {
+      flex-direction: row;
+      gap: 2rem;
+    }
+
+    .service-card__media {
+      width: 40%;
+      flex-shrink: 0;
+      aspect-ratio: 3 / 4;
+      margin-bottom: 0;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .service-card {
+      flex-direction: column;
+    }
+
+    .service-card__media {
+      width: 100%;
+    }
+  }
+</style>

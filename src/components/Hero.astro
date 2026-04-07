@@ -1,0 +1,193 @@
+---
+import type { Translations } from '../i18n/cs';
+
+interface Props {
+  t: Translations['hero'];
+  locale: 'cs' | 'en';
+}
+
+const { t, locale } = Astro.props;
+---
+
+<section class="hero" aria-label="Hero">
+  <div class="container hero__inner">
+    <div class="hero__content">
+      <h1 class="hero__heading">
+        <span class="hero__prefix">{t.headlinePrefix}</span>
+        <span class="hero__word" id="hero-word"
+          data-words={JSON.stringify(t.headlineWords)}>{t.headlineWords[0]}</span>
+      </h1>
+      <p class="hero__sub">{t.subheadline}</p>
+      <a href={`/${locale}/#contact`} class="btn btn--accent">{t.cta}</a>
+    </div>
+
+    <div class="hero__media">
+      <img src="/images/hero_carousel/carousel1.jpg" alt="Men's edit" class="hero__slide hero__slide--active" />
+      <img src="/images/hero_carousel/carousel2.jpg" alt="Men's edit" class="hero__slide" loading="lazy" />
+      <img src="/images/hero_carousel/carousel3.jpg" alt="Men's edit" class="hero__slide" loading="lazy" />
+      <img src="/images/hero_carousel/carousel4.jpg" alt="Men's edit" class="hero__slide" loading="lazy" />
+      <img src="/images/hero_carousel/carousel5.jpg" alt="Men's edit" class="hero__slide" loading="lazy" />
+      <img src="/images/hero_carousel/carousel6.jpg" alt="Men's edit" class="hero__slide" loading="lazy" />
+      <img src="/images/hero_carousel/carousel7.jpg" alt="Men's edit" class="hero__slide" loading="lazy" />
+    </div>
+  </div>
+
+</section>
+
+<style>
+  .hero {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    padding-top: 10.5rem; /* nav (5.5rem) + badge overhang (3.75rem) + buffer */
+  }
+
+  .hero__inner {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    padding-block: clamp(3rem, 8vw, 6rem);
+  }
+
+  .hero__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2rem;
+  }
+
+  .hero__heading {
+    font-size: clamp(1.75rem, 3.5vw, 3rem);
+    font-weight: 100;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text);
+    display: flex;
+    align-items: baseline;
+    gap: 0.3em;
+    flex-wrap: wrap;
+  }
+
+  .hero__word {
+    display: inline-block;
+    clip-path: inset(0 0% 0 0);
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  .hero__sub {
+    max-width: 38ch;
+    font-size: clamp(0.9375rem, 1.2vw, 1.0625rem);
+    font-weight: 200;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .hero__media {
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .hero__slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1400ms ease;
+  }
+
+  .hero__slide--active {
+    opacity: 1;
+  }
+
+  .hero__placeholder {
+    aspect-ratio: 3 / 4;
+  }
+
+  @media (max-width: 767px) {
+    .hero__inner {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto;
+    }
+
+    .hero__media {
+      order: -1;
+      aspect-ratio: 4 / 3;
+      max-height: 60vw;
+    }
+
+    .hero__placeholder {
+      aspect-ratio: 4 / 3;
+    }
+
+    .hero__content {
+      gap: 1.5rem;
+    }
+  }
+</style>
+
+<script>
+  const wordEl = document.getElementById('hero-word') as HTMLElement | null;
+  if (!wordEl) throw new Error('hero-word not found');
+
+  const words: string[] = JSON.parse(wordEl.dataset.words ?? '[]');
+  const WIPE_MS  = 420;  // délka wipe animace
+  const SHOW_MS  = 2600; // jak dlouho slovo zůstane vidět
+  const EASE     = 'cubic-bezier(0.77, 0, 0.175, 1)';
+  let wordIndex  = 0;
+
+  function setTransition(on: boolean) {
+    wordEl.style.transition = on ? `clip-path ${WIPE_MS}ms ${EASE}` : 'none';
+  }
+
+  function wipeOut(): Promise<void> {
+    return new Promise(resolve => {
+      setTransition(true);
+      // zmizí zleva doprava: levý okraj se posouvá doprava
+      wordEl.style.clipPath = 'inset(0 0% 0 100%)';
+      setTimeout(resolve, WIPE_MS);
+    });
+  }
+
+  function wipeIn(): Promise<void> {
+    return new Promise(resolve => {
+      // nové slovo schovaný zprava → odhalí se zleva doprava
+      setTransition(false);
+      wordEl.style.clipPath = 'inset(0 100% 0 0%)';
+      wordEl.offsetHeight; // force reflow
+      setTransition(true);
+      wordEl.style.clipPath = 'inset(0 0% 0 0%)';
+      setTimeout(resolve, WIPE_MS);
+    });
+  }
+
+  async function loop() {
+    await new Promise(r => setTimeout(r, SHOW_MS));
+
+    while (true) {
+      await wipeOut();
+
+      wordIndex = (wordIndex + 1) % words.length;
+      wordEl.textContent = words[wordIndex];
+
+      await wipeIn();
+      await new Promise(r => setTimeout(r, SHOW_MS));
+    }
+  }
+
+  loop();
+
+  // Hero carousel
+  const slides = document.querySelectorAll<HTMLElement>('.hero__slide');
+  let current = 0;
+  setInterval(() => {
+    slides[current].classList.remove('hero__slide--active');
+    current = (current + 1) % slides.length;
+    slides[current].classList.add('hero__slide--active');
+  }, 4000);
+</script>

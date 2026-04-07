@@ -1,0 +1,256 @@
+---
+import type { Translations } from '../i18n/cs';
+
+interface Props {
+  t: Translations['nav'];
+  locale: 'cs' | 'en';
+}
+
+const { t, locale } = Astro.props;
+const base = `/${locale}/`;
+---
+
+<header class="nav" id="nav">
+  <div class="container nav__inner">
+    <!-- Desktop nav links (vlevo) -->
+    <nav class="nav__links" aria-label="Hlavní navigace">
+      <a href={`${base}#about`}>{t.about}</a>
+      <a href={`${base}#services`}>{t.services}</a>
+      <a href={`${base}#portfolio`}>{t.portfolio}</a>
+      <a href={`${base}#contact`}>{t.contact}</a>
+    </nav>
+
+    <div class="nav__actions">
+      <a href={t.langSwitchHref} class="nav__lang" id="lang-switch" aria-label="Switch language">
+        {t.langSwitch}
+      </a>
+      <button class="nav__hamburger" id="hamburger" aria-expanded="false" aria-controls="mobile-menu"
+              aria-label={t.menuOpen}>
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Logo badge — černé kolečko přes čáru nav/hero -->
+  <a href={base} class="nav__badge" aria-label="Men's edit — domů">
+    <img src="/images/logo.png" alt="Men's edit" />
+  </a>
+
+  <!-- Mobile menu -->
+  <div class="nav__mobile" id="mobile-menu" aria-hidden="true">
+    <nav aria-label="Mobilní navigace">
+      <a href={`${base}#about`}>{t.about}</a>
+      <a href={`${base}#services`}>{t.services}</a>
+      <a href={`${base}#portfolio`}>{t.portfolio}</a>
+      <a href={`${base}#contact`}>{t.contact}</a>
+      <a href={t.langSwitchHref} class="nav__lang">{t.langSwitch}</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  // Hamburger toggle
+  const hamburger = document.getElementById('hamburger')!;
+  const mobileMenu = document.getElementById('mobile-menu')!;
+  const menuOpenLabel = hamburger.getAttribute('aria-label')!;
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = hamburger.getAttribute('aria-expanded') === 'true';
+    hamburger.setAttribute('aria-expanded', String(!isOpen));
+    hamburger.setAttribute('aria-label', isOpen ? menuOpenLabel : 'Zavřít menu');
+    mobileMenu.setAttribute('aria-hidden', String(isOpen));
+    mobileMenu.classList.toggle('nav__mobile--open', !isOpen);
+    document.body.classList.toggle('menu-open', !isOpen);
+  });
+
+  // Close mobile menu on link click
+  mobileMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.setAttribute('aria-expanded', 'false');
+      mobileMenu.setAttribute('aria-hidden', 'true');
+      mobileMenu.classList.remove('nav__mobile--open');
+      document.body.classList.remove('menu-open');
+    });
+  });
+
+  // Language switcher: preserve hash when switching locale
+  const langSwitch = document.getElementById('lang-switch') as HTMLAnchorElement;
+  if (langSwitch) {
+    langSwitch.addEventListener('click', (e) => {
+      const hash = window.location.hash;
+      if (hash) {
+        e.preventDefault();
+        window.location.href = langSwitch.href + hash;
+      }
+    });
+  }
+
+  // Sticky nav shadow on scroll
+  const nav = document.getElementById('nav')!;
+  const observer = new IntersectionObserver(
+    ([entry]) => nav.classList.toggle('nav--scrolled', !entry.isIntersecting),
+    { rootMargin: '-1px 0px 0px 0px', threshold: 0 }
+  );
+  const sentinel = document.createElement('div');
+  document.body.prepend(sentinel);
+  observer.observe(sentinel);
+</script>
+
+<style>
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(245, 240, 232, 0.58);
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
+    transition: box-shadow var(--transition);
+  }
+
+  .nav--scrolled {
+    box-shadow: 0 1px 0 var(--border);
+  }
+
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 5.5rem;
+    gap: 2rem;
+  }
+
+  /* Badge — černé kolečko centrálně přes spodní hranici navu */
+  .nav__badge {
+    position: absolute;
+    bottom: -3.75rem;       /* polovina výšky kolečka = přesah pod čáru */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 7.5rem;
+    height: 7.5rem;
+    border-radius: 50%;
+    background: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem;
+    overflow: hidden;
+    z-index: 101;
+  }
+
+  .nav__badge img {
+    width: 100%;
+    height: auto;
+    display: block;
+    mix-blend-mode: screen;
+  }
+
+  .nav__links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav__links a {
+    font-size: 0.6875rem;
+    font-weight: 300;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    transition: color var(--transition);
+  }
+
+  .nav__links a:hover {
+    color: var(--text);
+  }
+
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .nav__lang {
+    font-size: 0.6875rem;
+    font-weight: 300;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    transition: color var(--transition);
+  }
+
+  .nav__lang:hover {
+    color: var(--text);
+  }
+
+  /* Hamburger */
+  .nav__hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    width: 24px;
+    padding: 4px 0;
+  }
+
+  .nav__hamburger span {
+    display: block;
+    height: 1px;
+    background: var(--text);
+    transition: transform var(--transition), opacity var(--transition);
+  }
+
+  .nav__hamburger[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  .nav__hamburger[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .nav__hamburger[aria-expanded="true"] span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  /* Mobile menu */
+  .nav__mobile {
+    display: none;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 2rem var(--container-px) 2.5rem;
+  }
+
+  .nav__mobile--open {
+    display: block;
+  }
+
+  .nav__mobile nav {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .nav__mobile a {
+    font-size: 0.875rem;
+    font-weight: 300;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .nav__mobile .nav__lang {
+    margin-top: 0.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  body.menu-open {
+    overflow: hidden;
+  }
+
+  @media (max-width: 767px) {
+    .nav__links { display: none; }
+    .nav__actions .nav__lang { display: none; }
+    .nav__hamburger { display: flex; }
+  }
+</style>

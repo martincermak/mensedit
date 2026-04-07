@@ -1,0 +1,23 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../../components/Nav.astro';
+import Hero from '../../components/Hero.astro';
+import About from '../../components/About.astro';
+import Services from '../../components/Services.astro';
+import Portfolio from '../../components/Portfolio.astro';
+import Contact from '../../components/Contact.astro';
+import Footer from '../../components/Footer.astro';
+import { en } from '../../i18n/en';
+---
+
+<Layout title={en.meta.title} description={en.meta.description} lang="en" ogImage={en.meta.ogImage}>
+  <Nav t={en.nav} locale="en" />
+  <main>
+    <Hero t={en.hero} locale="en" />
+    <About t={en.about} />
+    <Services t={en.services} locale="en" />
+    <Portfolio t={en.portfolio} />
+    <Contact t={en.contact} />
+  </main>
+  <Footer t={en.footer} />
+</Layout>

@@ -1,0 +1,100 @@
+---
+import type { Translations } from '../i18n/cs';
+
+interface Props {
+  t: Translations['about'];
+}
+
+const { t } = Astro.props;
+const lines = t.heading.split('\n');
+---
+
+<section class="about section" id="about" aria-labelledby="about-heading">
+  <div class="container about__inner">
+    <div class="about__media">
+      <img src="/images/about-me.png" alt={t.imageAlt} />
+    </div>
+
+    <div class="about__content">
+      <span class="section-label">{t.sectionLabel}</span>
+      <h2 id="about-heading">
+        {lines.map((line, i) => (
+          <span>{line}{i < lines.length - 1 && <br />}</span>
+        ))}
+      </h2>
+      <div class="about__body">
+        {t.body.map(paragraph => (
+          <p>{paragraph}</p>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about__inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(3rem, 6vw, 7rem);
+    align-items: center;
+  }
+
+  .about__media {
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+  }
+
+  .about__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .about__placeholder {
+    aspect-ratio: 3 / 4;
+  }
+
+  .about__content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .about__content h2 {
+    font-weight: 100;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .about__body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .about__body p {
+    font-size: 1rem;
+    font-weight: 200;
+    color: var(--text-muted);
+    line-height: 1.8;
+    max-width: 44ch;
+  }
+
+  @media (max-width: 767px) {
+    .about__inner {
+      grid-template-columns: 1fr;
+    }
+
+    .about__media {
+      aspect-ratio: 4 / 3;
+    }
+
+    .about__placeholder {
+      aspect-ratio: 4 / 3;
+    }
+
+    .about__body p {
+      max-width: 100%;
+    }
+  }
+</style>

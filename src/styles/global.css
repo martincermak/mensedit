@@ -1,0 +1,148 @@
+/* ─── Design tokens ─────────────────────────────────────────────────────── */
+:root {
+  --bg:         #F5F0E8;
+  --surface:    #EDE7DA;
+  --surface-2:  #E4DDD0;
+  --text:       #1C1917;
+  --text-muted: #6B5B4E;
+  --accent:     #8B6F5E;
+  --border:     #D4C9BC;
+
+  --font-heading: 'Jost', system-ui, sans-serif;
+  /* Raleway je placeholder za Axon Ultralight.
+     Až bude webfont licence, stačí tuto hodnotu změnit. */
+  --font-body: 'Raleway', system-ui, sans-serif;
+
+  --max-w: 1200px;
+  --section-py: clamp(5rem, 10vw, 9rem);
+  --container-px: clamp(1.25rem, 5vw, 3rem);
+
+  --radius: 2px;
+  --transition: 220ms ease;
+}
+
+/* ─── Reset ─────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 1rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+img, video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font: inherit;
+  background: none;
+  border: none;
+}
+
+/* ─── Typography ────────────────────────────────────────────────────────── */
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: clamp(3rem, 7vw, 6.5rem); }
+h2 { font-size: clamp(2rem, 4vw, 3.5rem); }
+h3 { font-size: clamp(1.25rem, 2vw, 1.75rem); }
+
+.section-label {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+}
+
+/* ─── Layout helpers ────────────────────────────────────────────────────── */
+.container {
+  width: 100%;
+  max-width: var(--max-w);
+  margin-inline: auto;
+  padding-inline: var(--container-px);
+}
+
+.section {
+  padding-block: var(--section-py);
+}
+
+/* ─── Buttons ───────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2.25rem;
+  font-size: 0.6875rem;
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border: 1px solid var(--text);
+  color: var(--text);
+  transition: background var(--transition), color var(--transition);
+}
+
+.btn:hover {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.btn--accent {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.btn--accent:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+
+/* ─── Image placeholder ─────────────────────────────────────────────────── */
+.img-placeholder {
+  background-color: var(--surface-2);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--border);
+  font-size: 0.625rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* ─── Focus visible ─────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}

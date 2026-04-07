@@ -1,0 +1,89 @@
+---
+import type { Translations } from '../i18n/cs';
+
+interface Props {
+  t: Translations['portfolio'];
+}
+
+const { t } = Astro.props;
+---
+
+<section class="portfolio section" id="portfolio" aria-labelledby="portfolio-heading">
+  <div class="container">
+    <div class="portfolio__header">
+      <span class="section-label">{t.sectionLabel}</span>
+      <h2 id="portfolio-heading">{t.heading}</h2>
+      <p class="portfolio__sub">{t.subheading}</p>
+    </div>
+
+    <ul class="portfolio__grid" role="list">
+      {t.images.map((img) => (
+        <li class="portfolio__item">
+          <img src={img.src} alt={img.alt} loading="lazy" />
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .portfolio__header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: clamp(3rem, 5vw, 4.5rem);
+  }
+
+  .portfolio__sub {
+    font-size: 1rem;
+    font-weight: 200;
+    color: var(--text-muted);
+    max-width: 52ch;
+    line-height: 1.75;
+  }
+
+  .portfolio__grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .portfolio__item {
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: var(--surface);
+  }
+
+  .portfolio__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 600ms ease;
+  }
+
+  .portfolio__item:hover img {
+    transform: scale(1.03);
+  }
+
+  .portfolio__item .img-placeholder {
+    width: 100%;
+    height: 100%;
+  }
+
+  @media (max-width: 900px) {
+    .portfolio__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .portfolio__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .portfolio__item {
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>

@@ -1,0 +1,50 @@
+---
+import type { Translations } from '../i18n/cs';
+
+interface Props {
+  t: Translations['footer'];
+}
+
+const { t } = Astro.props;
+---
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <p class="footer__copy">{t.copyright}</p>
+    <a href={t.langSwitchHref} class="footer__lang">{t.langSwitch}</a>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--border);
+    padding-block: 2rem;
+  }
+
+  .footer__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .footer__copy {
+    font-size: 0.75rem;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+  }
+
+  .footer__lang {
+    font-size: 0.6875rem;
+    font-weight: 300;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    transition: color var(--transition);
+  }
+
+  .footer__lang:hover {
+    color: var(--text);
+  }
+</style>
