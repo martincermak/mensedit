@@ -7,6 +7,7 @@ interface Props {
 }
 
 const { t, locale } = Astro.props;
+const base = import.meta.env.BASE_URL;
 ---
 
 <section class="services section" id="services" aria-labelledby="services-heading">
@@ -20,7 +21,7 @@ const { t, locale } = Astro.props;
       {t.items.map((item, index) => (
         <li class="service-card">
           <div class="service-card__media">
-            <img src={item.image} alt={item.name} loading="lazy" />
+            <img src={`${base}${item.image.slice(1)}`} alt={item.name} loading="lazy" />
           </div>
           <div class="service-card__content">
             <span class="service-card__index" aria-hidden="true">
